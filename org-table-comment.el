@@ -424,6 +424,7 @@ Zero or below is considered a non-permissive comment
     (error
      (message "[org-table-comment] Error running post-command-hook: %s" (error-message-string error)))))
 
+;;;###autoload
 (defalias 'org-table-comment-mode 'orgtbl-comment-mode)
 ;;;###autoload
 (define-minor-mode orgtbl-comment-mode
