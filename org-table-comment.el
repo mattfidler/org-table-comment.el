@@ -6,9 +6,9 @@
 ;; Maintainer: Matthew L. Fidler
 ;; Created: Wed Jan 12 14:51:05 2011 (-0600)
 ;; Version: 0.2
-;; Last-Updated: Thu Feb  9 12:18:01 2012 (-0600)
+;; Last-Updated: Thu Feb  9 12:46:30 2012 (-0600)
 ;;           By: Matthew L. Fidler
-;;     Update #: 445
+;;     Update #: 449
 ;; URL: http://github.com/mlf176f2/org-table-comment.el
 ;; Keywords: org-mode orgtbl
 ;; Compatibility: Tested with Org 7.4 on Windows Emacs 23.2 
@@ -98,10 +98,13 @@
 ;; 
 ;;; Change Log:
 ;; 09-Feb-2012    Matthew L. Fidler  
+;;    Last-Updated: Thu Feb  9 12:29:40 2012 (-0600) #447 (Matthew L. Fidler)
+;;    Bug fix to edit region when selection is active
+;; 09-Feb-2012    Matthew L. Fidler  
 ;;    Last-Updated: Thu Feb  9 12:13:12 2012 (-0600) #444 (Matthew L. Fidler)
 ;;    Will not edit a region when selection is active.
 ;; 07-Apr-2011      
-;;    Last-Updated: Thu Apr  7 14:32:50 2011 (-0500) #439 (US041375)
+;;    Last-Updated: Thu Apr  7 14:32:50 2011 (-0500) #439 (Matthew L. Fidler)
 ;;    Minor changes.  Beter ELPA support.
 ;; 18-Jan-2011    Matthew L. Fidler  
 ;;    Last-Updated: Tue Jan 18 15:23:04 2011 (-0600) #437 (Matthew L. Fidler)
@@ -110,7 +113,7 @@
 ;;    Last-Updated: Thu Jan 13 12:44:44 2011 (-0600) #396 (Matthew L. Fidler)
 ;;    Initial version
 ;; 
-;; 
+;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; 
 ;; This program is free software; you can redistribute it and/or
@@ -263,8 +266,6 @@ END is the end of the region to check"
     (if (not org-table-comment-use-overlay)
         (if (not (org-table-comment-p))
             nil
-	  (if (not (region-active-p))
-	      nil
           (org-table-comment-narrow)
           (uncomment-region (point-min) (point-max))
           (setq perm org-table-comment-permissive-text)
@@ -296,7 +297,7 @@ END is the end of the region to check"
                                           (overlay-end over) t)
                   (replace-match ""))))
             (setq org-table-comment-editing (point))
-            over)))))))
+            over))))))
 
 (defun org-table-comment-return (&optional passed-overlay)
   "Stops editing an org-table in a comment"
@@ -405,7 +406,8 @@ Zero or below is considered a non-permissive comment
           (let ((over (if org-table-comment-use-overlay (org-table-comment-overlay-get (point)) nil)))
           (cond
            ((and org-table-comment-use-overlay (not org-table-comment-editing)
-                 (org-table-comment-p t))
+                 (org-table-comment-p t)
+                 (not (region-active-p)))
             (org-table-comment-edit))
            ((and over (string-match "\\`[ \t\n]*\\'" (buffer-substring-no-properties (overlay-start over) (overlay-end over))))
             (setq org-table-comment-editing nil)
