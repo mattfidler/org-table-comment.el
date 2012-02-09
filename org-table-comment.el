@@ -6,16 +6,23 @@
 ;; Maintainer: Matthew L. Fidler
 ;; Created: Wed Jan 12 14:51:05 2011 (-0600)
 ;; Version: 0.2
-;; Last-Updated: Thu Apr  7 14:35:07 2011 (-0500)
-;;           By: US041375
-;;     Update #: 443
-;; URL: http://www.emacswiki.org/emacs/download/org-table-comment.el
+;; Last-Updated: Thu Feb  9 12:18:01 2012 (-0600)
+;;           By: Matthew L. Fidler
+;;     Update #: 445
+;; URL: http://github.com/mlf176f2/org-table-comment.el
 ;; Keywords: org-mode orgtbl
 ;; Compatibility: Tested with Org 7.4 on Windows Emacs 23.2 
 ;; 
 ;; Features that might be required by this library:
 ;;
-;;   `org', `org-table'.
+;;   `backquote', `bytecomp', `cal-menu', `calendar', `cconv',
+;;   `comint', `easymenu', `font-lock', `help-fns', `macroexp',
+;;   `noutline', `ob', `ob-comint', `ob-emacs-lisp', `ob-eval',
+;;   `ob-keys', `ob-lob', `ob-ref', `ob-table', `ob-tangle', `org',
+;;   `org-compat', `org-entities', `org-faces', `org-footnote',
+;;   `org-list', `org-macs', `org-pcomplete', `org-src', `org-table',
+;;   `outline', `overlay', `pcomplete', `ring', `syntax',
+;;   `time-date', `warnings'.
 ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; 
@@ -90,6 +97,9 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; 
 ;;; Change Log:
+;; 09-Feb-2012    Matthew L. Fidler  
+;;    Last-Updated: Thu Feb  9 12:13:12 2012 (-0600) #444 (Matthew L. Fidler)
+;;    Will not edit a region when selection is active.
 ;; 07-Apr-2011      
 ;;    Last-Updated: Thu Apr  7 14:32:50 2011 (-0500) #439 (US041375)
 ;;    Minor changes.  Beter ELPA support.
@@ -244,15 +254,17 @@ END is the end of the region to check"
 (unless org-table-comment-category
   (put 'org-table-comment-category 'face 'highlight)
   (put 'org-table-comment-category 'org-comment-table t))
+
 (defun org-table-comment-edit (&optional pt)
   "Starts editing an org-table in a comment"
   (interactive)
   (run-hooks 'org-table-comment-before-edit-hook)
-  (let (perm
-        (debug-on-error t) (debug-on-quit t))
+  (let (perm)
     (if (not org-table-comment-use-overlay)
         (if (not (org-table-comment-p))
             nil
+	  (if (not (region-active-p))
+	      nil
           (org-table-comment-narrow)
           (uncomment-region (point-min) (point-max))
           (setq perm org-table-comment-permissive-text)
@@ -284,7 +296,7 @@ END is the end of the region to check"
                                           (overlay-end over) t)
                   (replace-match ""))))
             (setq org-table-comment-editing (point))
-            over))))))
+            over)))))))
 
 (defun org-table-comment-return (&optional passed-overlay)
   "Stops editing an org-table in a comment"
