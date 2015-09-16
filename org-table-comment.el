@@ -383,6 +383,7 @@ Zero or below is considered a non-permissive comment
 (defvar org-table-comment-at-beginning nil)
 
 (defvar org-table-comment-at-end nil)
+(defvar org-table-comment-pre-point nil)
 
 (defun org-table-comment-pre-command ()
   "Pre-command called for `orgtbl-comment-mode'"
